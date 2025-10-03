@@ -9,6 +9,7 @@ import {
   Font,
   Image,
 } from "@react-pdf/renderer";
+import { preserveWhitespaceForPdf } from "@/lib/pdfUtils";
 
 Font.register({
   family: "Latin Modern Roman",
@@ -60,7 +61,7 @@ export const PDFDocument = ({ program, output, image }: PDFDocumentProps) => (
         <Text>Program</Text>
       </View>
       <View style={styles.code}>
-        <Text>{program || "// program"}</Text>
+        <Text>{preserveWhitespaceForPdf(program || "// program")}</Text>
       </View>
 
       {(output || image) && (
@@ -75,7 +76,7 @@ export const PDFDocument = ({ program, output, image }: PDFDocumentProps) => (
           )}
           {output && (
             <View style={styles.code}>
-              <Text>{output}</Text>
+              <Text>{preserveWhitespaceForPdf(output)}</Text>
             </View>
           )}
         </>

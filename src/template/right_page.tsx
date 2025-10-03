@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Font,
 } from "@react-pdf/renderer";
+import { preserveWhitespaceForPdf } from "@/lib/pdfUtils";
 
 Font.register({
   family: "Latin Modern Roman",
@@ -126,7 +127,11 @@ export const ExperimentPDFDocument = ({
               <Text>{step.text || `Step ${index + 1}`}</Text>
               {step.hasCode && (
                 <View style={styles.codeBlock}>
-                  <Text>{step.code || "% Enter the Pseudo Code here"}</Text>
+                  <Text>
+                    {preserveWhitespaceForPdf(
+                      step.code || "% Enter the Pseudo Code here"
+                    )}
+                  </Text>
                 </View>
               )}
             </View>
