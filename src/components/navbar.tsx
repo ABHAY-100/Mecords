@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Github } from "lucide-react";
-import LikeButton from "@/components/like-button";
+import { Github, Archive } from "lucide-react";
 
 export function Navbar() {
   return (
@@ -17,7 +16,7 @@ export function Navbar() {
             </span>
           </Link>
         </div>
-        <div className="flex flex-1 items-center justify-end">
+        <div className="flex flex-1 items-center justify-end gap-2">
           <div className="flex items-center gap-2">
             <a
               href="https://github.com/ABHAY-100/mecords"
@@ -36,7 +35,25 @@ export function Navbar() {
                 </span>
               </Button>
             </a>
-            <LikeButton />
+          </div>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://www.dropbox.com/scl/fo/qquvekt18178myxhrtmdz/AF5QbQ2G4Il7SVuc8GYx-cs?rlkey=bx9dl3nyf7kisnxgj87aqv1xr&st=pe7jd8aq&dl=0"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 gap-[6px] font-clashgrotesk"
+              >
+                <Archive className="h-3 w-3 min-[400px]" />
+                <span className="pt-[3px] text-[15px] max-[400px]:hidden">
+                  Archive
+                </span>
+              </Button>
+            </a>
           </div>
         </div>
       </div>
