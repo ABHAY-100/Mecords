@@ -31,6 +31,8 @@ import {
   ImageIcon,
   BookOpen,
   ListChecks,
+  ExternalLink,
+  FileType,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -86,8 +88,11 @@ interface IndexEntry {
 
 export default function Home() {
   const [templateType, setTemplateType] = useState<
-    "simple" | "experiment" | "index"
+    "simple" | "experiment" | "index" | "coverpage"
   >("experiment");
+
+  const COVER_PAGE_DOC_URL =
+    "https://www.dropbox.com/scl/fo/qquvekt18178myxhrtmdz/ADwXBUgmfLa6QiHLl7ZCde4/COVER%20PAGE%20(%20MEC%20LAB%20RECORD%20).docx?rlkey=bx9dl3nyf7kisnxgj87aqv1xr&st=1r32p60i&dl=0";
 
   const [program, setProgram] = useState("");
   const [output, setOutput] = useState("");
@@ -327,7 +332,7 @@ export default function Home() {
               </Label>
               <Select
                 value={templateType}
-                onValueChange={(value: "simple" | "experiment" | "index") =>
+                onValueChange={(value: "simple" | "experiment" | "index" | "coverpage") =>
                   setTemplateType(value)
                 }
               >
@@ -356,6 +361,13 @@ export default function Home() {
                     <FileCode className="h-4 w-4" />
                     <span>Program & Output</span>
                   </SelectItem>
+                  <SelectItem
+                    value="coverpage"
+                    className="flex items-center gap-2"
+                  >
+                    <FileType className="h-4 w-4" />
+                    <span>Cover Page</span>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -363,6 +375,7 @@ export default function Home() {
         </CardContent>
       </Card>
 
+      {templateType !== "coverpage" && (
       <Tabs defaultValue="editor" className="w-full">
         <TabsList className="grid grid-cols-2 w-[200px] mb-6">
           <TabsTrigger value="editor">Editor</TabsTrigger>
@@ -974,6 +987,7 @@ export default function Home() {
           </Card>
         </TabsContent>
       </Tabs>
+      )}
 
       <div className="mt-8 flex justify-center">
         {templateType === "simple" ? (
@@ -994,6 +1008,18 @@ export default function Home() {
           </Suspense>
         ) : templateType === "experiment" ? (
           handleExperimentPDFDownload()
+        ) : templateType === "coverpage" ? (
+          <a
+            href={COVER_PAGE_DOC_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2"
+          >
+            <Button variant="outline" className="gap-2">
+              <ExternalLink className="h-4 w-4" />
+              Open Cover Page
+            </Button>
+          </a>
         ) : (
           handleIndexPDFDownload()
         )}
