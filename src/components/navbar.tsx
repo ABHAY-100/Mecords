@@ -34,7 +34,7 @@ export function Navbar() {
                   className="h-8 gap-[6px] font-clashgrotesk"
                 >
                   <span className="pt-[3px] text-[15px] max-[400px]:hidden">
-                    Tools
+                    Utilities
                   </span>
                   <ChevronDown className="h-3 w-3 opacity-50 pt-0.5 ml-0.5" />
                 </Button>
