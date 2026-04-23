@@ -12,6 +12,7 @@ interface AlgorithmStep {
   text: string;
   hasCode: boolean;
   code: string;
+  isHeading?: boolean;
 }
 
 interface SimplePDFProps {
@@ -144,6 +145,7 @@ export function ExperimentPDFDownloadButton({
       text: String(step.text || ""),
       hasCode: Boolean(step.hasCode),
       code: String(step.code || ""),
+      isHeading: Boolean(step.isHeading),
     })),
     experimentResult: experimentData.experimentResult || "",
     resultOnNewPage: Boolean(experimentData.resultOnNewPage),

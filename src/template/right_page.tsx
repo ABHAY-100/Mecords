@@ -19,6 +19,7 @@ interface AlgorithmStep {
   text: string;
   hasCode: boolean;
   code: string;
+  isHeading?: boolean;
 }
 
 interface ExperimentPDFDocumentProps {
@@ -118,25 +119,43 @@ export const ExperimentPDFDocument = ({
         <Text>Algorithm:</Text>
       </View>
       <View style={styles.content}>
-        {algorithmSteps.map((step, index) => (
-          <View key={index} style={styles.listItem}>
-            <View style={styles.listNumber}>
-              <Text>{index + 1}.</Text>
-            </View>
-            <View style={styles.listContent}>
-              <Text>{step.text || `Step ${index + 1}`}</Text>
-              {step.hasCode && (
-                <View style={styles.codeBlock}>
-                  <Text>
-                    {preserveWhitespaceForPdf(
-                      step.code || "% Enter the Pseudo Code here"
-                    )}
+        {(() => {
+          let stepCounter = 0;
+          return algorithmSteps.map((step, index) => {
+            if (step.isHeading) {
+              stepCounter = 0;
+            } else {
+              stepCounter++;
+            }
+            return (
+              <View key={index} style={styles.listItem}>
+                {!step.isHeading && (
+                  <View style={styles.listNumber}>
+                    <Text>{stepCounter}.</Text>
+                  </View>
+                )}
+                <View style={styles.listContent}>
+                  <Text style={{ 
+                    fontWeight: step.isHeading ? 'bold' : 'normal',
+                    fontSize: step.isHeading ? 13 : 12,
+                    marginTop: step.isHeading && index !== 0 ? 5 : 0
+                  }}>
+                    {step.text || (step.isHeading ? "Sub-Heading" : `Step ${stepCounter}`)}
                   </Text>
+                  {step.hasCode && (
+                    <View style={styles.codeBlock}>
+                      <Text>
+                        {preserveWhitespaceForPdf(
+                          step.code || "% Enter the Pseudo Code here"
+                        )}
+                      </Text>
+                    </View>
+                  )}
                 </View>
-              )}
-            </View>
-          </View>
-        ))}
+              </View>
+            );
+          });
+        })()}
       </View>
 
       {!resultOnNewPage && (

@@ -75,6 +75,7 @@ interface AlgorithmStep {
   text: string;
   hasCode: boolean;
   code: string;
+  isHeading?: boolean;
 }
 
 interface IndexEntry {
@@ -106,8 +107,8 @@ export default function Home() {
   const [experimentTitle, setExperimentTitle] = useState("");
   const [experimentAim, setExperimentAim] = useState("");
   const [algorithmSteps, setAlgorithmSteps] = useState<AlgorithmStep[]>(() => [
-    { id: crypto.randomUUID(), text: "Start", hasCode: false, code: "" },
-    { id: crypto.randomUUID(), text: "Stop", hasCode: false, code: "" },
+    { id: crypto.randomUUID(), text: "Start", hasCode: false, code: "", isHeading: false },
+    { id: crypto.randomUUID(), text: "Stop", hasCode: false, code: "", isHeading: false },
   ]);
   const [experimentResult, setExperimentResult] = useState(
     "Program has been executed successfully and obtained the output."
@@ -134,6 +135,7 @@ export default function Home() {
         text: "",
         hasCode: false,
         code: "",
+        isHeading: false,
       });
       return newSteps;
     });
@@ -149,6 +151,7 @@ export default function Home() {
         text: step.text,
         hasCode: Boolean(step.hasCode),
         code: step.code,
+        isHeading: Boolean(step.isHeading),
       }));
 
     setAlgorithmSteps(newSteps);
@@ -212,6 +215,7 @@ export default function Home() {
           text: String(step.text || ""),
           hasCode: Boolean(step.hasCode),
           code: String(step.code || ""),
+          isHeading: Boolean(step.isHeading),
         }));
       } catch (e) {
         console.error("Step validation error:", e);
@@ -552,10 +556,23 @@ export default function Home() {
                           >
                             <div className="flex items-center gap-2">
                               <div className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-200 text-slate-700 font-medium text-sm">
-                                {index + 1}
+                                {!step.isHeading ? (
+                                  (() => {
+                                    const precedingSteps = algorithmSteps.slice(0, index + 1).reverse();
+                                    const lastHeadingIndexFromCurrent = precedingSteps.findIndex(s => s.isHeading);
+                                    if (lastHeadingIndexFromCurrent === -1) {
+                                      return algorithmSteps.slice(0, index + 1).filter(s => !s.isHeading).length;
+                                    } else {
+                                      const startIndex = index - lastHeadingIndexFromCurrent + 1;
+                                      return algorithmSteps.slice(startIndex, index + 1).filter(s => !s.isHeading).length;
+                                    }
+                                  })()
+                                ) : (
+                                  <span className="text-[10px]">H</span>
+                                )}
                               </div>
                               <Input
-                                placeholder="Step description"
+                                placeholder={step.isHeading ? "Heading title" : "Step description"}
                                 value={step.text}
                                 onChange={(e) =>
                                   updateAlgorithmStep(
@@ -564,7 +581,7 @@ export default function Home() {
                                     e.target.value
                                   )
                                 }
-                                className="flex-1 bg-white"
+                                className={`flex-1 bg-white ${step.isHeading ? "font-medium" : ""}`}
                               />
                               <Button
                                 variant="outline"
@@ -588,7 +605,27 @@ export default function Home() {
                               )}
                             </div>
 
-                            <div className="flex items-center gap-2 ml-8">
+                            <div className="flex items-center gap-6 ml-8">
+                              <div className="flex items-center space-x-2">
+                                <Switch
+                                  id={`is-heading-${index}`}
+                                  checked={step.isHeading}
+                                  onCheckedChange={(checked) =>
+                                    updateAlgorithmStep(
+                                      index,
+                                      "isHeading",
+                                      checked
+                                    )
+                                  }
+                                />
+                                <Label
+                                  htmlFor={`is-heading-${index}`}
+                                  className="text-sm font-medium"
+                                >
+                                  Set as Sub-Heading
+                                </Label>
+                              </div>
+
                               <div className="flex items-center space-x-2">
                                 <Switch
                                   id={`has-code-${index}`}
@@ -878,20 +915,49 @@ export default function Home() {
                         Algorithm
                       </h3>
                       <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
-                        <ol className="list-decimal pl-5 space-y-3">
-                          {algorithmSteps.map((step, index) => (
-                            <li key={index} className="text-slate-800">
-                              {step.text}
-                              {step.hasCode && (
-                                <div className="mt-2 bg-white p-3 rounded border border-slate-200 font-mono text-sm">
-                                  <pre className="whitespace-pre-wrap">
-                                    {step.code || "// Code will appear here"}
-                                  </pre>
+                        <div className="space-y-3">
+                          {(() => {
+                            let previewStepCounter = 0;
+                            return algorithmSteps.map((step, index) => {
+                              if (step.isHeading) {
+                                previewStepCounter = 0;
+                              } else {
+                                previewStepCounter++;
+                              }
+                              return (
+                                <div key={index} className="text-slate-800">
+                                  <div className="flex gap-2">
+                                    {!step.isHeading && (
+                                      <span className="font-medium shrink-0">
+                                        {previewStepCounter}.
+                                      </span>
+                                    )}
+                                    <span
+                                      className={
+                                        step.isHeading
+                                          ? "font-bold text-slate-900 mt-1 first:mt-0"
+                                          : ""
+                                      }
+                                    >
+                                      {step.text ||
+                                        (step.isHeading
+                                          ? "Sub-Heading"
+                                          : `Step ${previewStepCounter}`)}
+                                    </span>
+                                  </div>
+                                  {step.hasCode && (
+                                    <div className="mt-2 ml-5 bg-white p-3 rounded border border-slate-200 font-mono text-sm">
+                                      <pre className="whitespace-pre-wrap">
+                                        {step.code ||
+                                          "// Code will appear here"}
+                                      </pre>
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </li>
-                          ))}
-                        </ol>
+                              );
+                            });
+                          })()}
+                        </div>
                       </div>
                     </div>
 
